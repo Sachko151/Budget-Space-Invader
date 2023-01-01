@@ -41,10 +41,22 @@ def shoot(hitbox: pygame.Rect):
     player_ammo-=1
     bullet_hitboxes.append(pygame.Rect(hitbox.x,hitbox.y, BULLET_SIZE // 2, BULLET_SIZE))
 def spawn_enemies(num_of_enemies):
-    if len(enemis_hitboxes) >= num_of_enemies:
-        return
-    for x in range(num_of_enemies):
-        enemis_hitboxes.append(pygame.Rect(random.randint(10,1200), random.randint(10, 270), ENEMY_SIZE, ENEMY_SIZE))
+    # rand_X = random.randint(10,1200)
+    # rand_Y = random.randint(10, 270)
+    for x in range(num_of_enemies - len(enemis_hitboxes)):
+        if x == 0:
+            enemis_hitboxes.append(pygame.Rect(0, 0 , ENEMY_SIZE, ENEMY_SIZE))
+            continue
+        last_pos_x = enemis_hitboxes[-1].x
+        last_pos_y = enemis_hitboxes[-1].y
+        rand_offset_x = random.randint(ENEMY_SIZE, ENEMY_SIZE * 2)
+        rand_offset_y = random.randint(0, ENEMY_SIZE)
+        enemis_hitboxes.append(pygame.Rect(last_pos_x+rand_offset_x, last_pos_y+rand_offset_y , ENEMY_SIZE, ENEMY_SIZE))
+    
+
+
+               
+        
 def draw_enemies():
     enemy_image = pygame.image.load('assets/enemy.png').convert_alpha()
     enemy_image = pygame.transform.scale(enemy_image, (ENEMY_SIZE, ENEMY_SIZE))
