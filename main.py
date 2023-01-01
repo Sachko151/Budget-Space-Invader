@@ -6,19 +6,20 @@ ENEMY_SIZE = 100
 BULLET_VELOCITY = 20
 player_ammo = 10
 lastTimeShot = 0
-BASE_MOVEMENT = 5
+BASE_MOVEMENT = 15
+PLAYER_SIZE = 100
 
 window = pygame.display.set_mode((WINDOW_HEIGHT, WINDOW_WIDTH))
 bullet_hitboxes = []
 enemis_hitboxes = []
 pygame.display.set_caption('Budget Space Invader')
 def set_window_background():
-    background_img = pygame.image.load('assets/background.png')
+    background_img = pygame.image.load('assets/background.png').convert_alpha()
     background_img = pygame.transform.scale(background_img, (WINDOW_HEIGHT, WINDOW_WIDTH))
     window.blit(background_img, (0,0))
 def spawn_player(hitbox: pygame.Rect):
     player_img = pygame.image.load('assets/spaceship.png').convert_alpha()
-    player_img = pygame.transform.scale(player_img, (100, 100))
+    player_img = pygame.transform.scale(player_img, (PLAYER_SIZE, PLAYER_SIZE))
     window.blit(player_img, (hitbox.x,hitbox.y))
 def handle_player_movement(keys_pressed, hitbox):
     
@@ -39,7 +40,7 @@ def shoot(hitbox: pygame.Rect):
         return
     lastTimeShot = pygame.time.get_ticks()
     player_ammo-=1
-    bullet_hitboxes.append(pygame.Rect(hitbox.x,hitbox.y, BULLET_SIZE // 2, BULLET_SIZE))
+    bullet_hitboxes.append(pygame.Rect(hitbox.x+40,hitbox.y, BULLET_SIZE // 2, BULLET_SIZE))
 def spawn_enemies(num_of_enemies):
     # rand_X = random.randint(10,1200)
     # rand_Y = random.randint(10, 270)
@@ -80,7 +81,7 @@ def movebullets_and_delete_when_out_of_screen():##TOFIX
 def main():
     enemies = 5
     set_window_background()
-    player_hitbox = pygame.Rect(0,0 , 100, 100)
+    player_hitbox = pygame.Rect(590,550 , 100, 100)
     pygame.time.Clock().tick(60)
     notSpawned = True
     while True:
