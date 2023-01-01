@@ -43,6 +43,7 @@ def shoot(hitbox: pygame.Rect):
 def spawn_enemies(num_of_enemies):
     # rand_X = random.randint(10,1200)
     # rand_Y = random.randint(10, 270)
+    #id be better to have 3 layers of enemies instead of randomly spawning them
     for x in range(num_of_enemies - len(enemis_hitboxes)):
         if x == 0:
             enemis_hitboxes.append(pygame.Rect(0, 0 , ENEMY_SIZE, ENEMY_SIZE))
@@ -52,10 +53,12 @@ def spawn_enemies(num_of_enemies):
         rand_offset_x = random.randint(ENEMY_SIZE, ENEMY_SIZE * 2)
         rand_offset_y = random.randint(0, ENEMY_SIZE)
         enemis_hitboxes.append(pygame.Rect(last_pos_x+rand_offset_x, last_pos_y+rand_offset_y , ENEMY_SIZE, ENEMY_SIZE))
-    
-
-
-               
+def detect_collisions():
+    for bullet in bullet_hitboxes:
+        for i in range(len(enemis_hitboxes)):
+            if bullet.colliderect(enemis_hitboxes[i]):
+                enemis_hitboxes.remove(enemis_hitboxes[i])
+                return          
         
 def draw_enemies():
     enemy_image = pygame.image.load('assets/enemy.png').convert_alpha()
@@ -79,16 +82,18 @@ def main():
     set_window_background()
     player_hitbox = pygame.Rect(0,0 , 100, 100)
     pygame.time.Clock().tick(60)
+    notSpawned = True
     while True:
-        
         set_window_background()
-        spawn_enemies(enemies)
-        draw_enemies()
         spawn_player(player_hitbox)
+        draw_enemies()
+        if notSpawned:
+            spawn_enemies(enemies)
+            notSpawned = False
         handle_player_movement(pygame.key.get_pressed(), player_hitbox)
         animatebullets()
         movebullets_and_delete_when_out_of_screen()
-        #print(bullet_hitboxes)
+        detect_collisions()
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT:
                 return
