@@ -58,9 +58,6 @@ def spawn_enemies(num_of_enemies_to_spawn):
             if enemis_hitboxes[i][j] == None:
                 enemis_hitboxes[i][j] = pygame.Rect(50+j*(ENEMY_SIZE+20), i*(ENEMY_SIZE+20), ENEMY_SIZE, ENEMY_SIZE)
                 num_of_enemies_to_spawn-=1
-    print('==================')
-    print(enemis_hitboxes[1])
-    print('==================')
 def detect_collisions():
     for bullet in bullet_hitboxes:
         for i in range(len(enemis_hitboxes)):
@@ -68,7 +65,7 @@ def detect_collisions():
                 if enemis_hitboxes[i][j] == None:
                     return
                 if bullet.colliderect(enemis_hitboxes[i][j]):
-                    print(enemis_hitboxes[i][j],enemis_hitboxes)
+
                     enemis_hitboxes[i].remove(enemis_hitboxes[i][j])
                     bullet_hitboxes.remove(bullet)
                     return          
