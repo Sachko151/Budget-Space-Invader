@@ -1,5 +1,6 @@
 import pygame
 from player import Player
+from game_over_screen import GameOver
 class Game():
     def __init__(self, height, width, player_size, player_speed, start_ammo, bullet_size, enemy_size,
     bullet_speed) -> None:
@@ -19,6 +20,7 @@ class Game():
         self.max_enemies = 30
         self.enemies_amount = 0
         self.current_wave = 1
+        self.playerIsDead = False
     def spawn_player(self,hitbox: pygame.Rect):
         player_img = pygame.image.load('assets/spaceship.png').convert_alpha()
         player_img = pygame.transform.scale(player_img, (self.player_size, self.player_size))
@@ -110,6 +112,14 @@ class Game():
         text_rect = text.get_rect()
         text_rect.center = (1225, 683)
         self.window.blit(text, text_rect)
+    def detect_if_game_is_over(self):
+        if self.ammo <= 0 or self.playerIsDead:
+            return True
+        return False
+    def end_game_and_go_to_game_over_screen(self):
+            self.window = None
+            GameOver(self.WINDOW_HEIGHT, self.WINDOW_WIDTH, self.player_size, self.player_speed,
+            10, self.bullet_size, self.enemy_size, self.bullet_velocity).run()
     def pre_run_init(self):
         pygame.init()
         pygame.display.set_caption('Budget Space Invader')
@@ -132,7 +142,9 @@ class Game():
             self.animatebullets()
             self.movebullets_and_delete_when_out_of_screen()
             self.detect_collisions()
-            for event in pygame.event.get(): 
+            if self.detect_if_game_is_over():
+                self.end_game_and_go_to_game_over_screen()
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     return
