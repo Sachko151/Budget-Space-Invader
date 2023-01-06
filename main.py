@@ -1,8 +1,9 @@
 from game import Game
+from home_screen import HomeScreen
 class Main():
     def __init__(self, height, width, player_size, player_speed, start_ammo, bullet_size, enemy_size,
     bullet_speed) -> None:
-        self.game = Game(height, width, player_size, player_speed, start_ammo, bullet_size, enemy_size,
+        self.game = HomeScreen(height, width, player_size, player_speed, start_ammo, bullet_size, enemy_size,
     bullet_speed)
 
     def start(self):
