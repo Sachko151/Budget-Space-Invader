@@ -21,6 +21,11 @@ class Game():
         self.enemies_amount = 0
         self.current_wave = 1
         self.playerIsDead = False
+        self.enemy_bullet_hitboxes = []
+        self.current_bullet = 0
+        self.last_time_enemy_shot = 0
+        self.difficulty_time = 1500 #can be used to improve difficulty after each wave this decrements by 100ms
+        self.max_amount_of_enemy_bullets = 10 # max amount of bullets that the enemies can shoot
     def spawn_player(self,hitbox: pygame.Rect):
         player_img = pygame.image.load('assets/spaceship.png').convert_alpha()
         player_img = pygame.transform.scale(player_img, (self.player_size, self.player_size))
@@ -65,8 +70,7 @@ class Game():
                 if self.enemis_hitboxes[i][j] == None:
                     self.enemis_hitboxes[i][j] = pygame.Rect(50+j*(self.enemy_size+20), i*(self.enemy_size+20), self.enemy_size, self.enemy_size)
                     num_of_enemies_to_spawn-=1
-                    self.enemies_amount+=1
-        
+                    self.enemies_amount+=1       
     def detect_collisions(self):
         for bullet in self.bullet_hitboxes:
             for i in range(len(self.enemis_hitboxes)):
@@ -106,6 +110,35 @@ class Game():
         text_rect = text.get_rect()
         text_rect.center = (1210, 709)
         self.window.blit(text, text_rect)
+    def enemy_assign_shoot(self):
+        import random
+        shoot_pr = random.randint(0,1)
+        if pygame.time.get_ticks() - self.last_time_enemy_shot < self.difficulty_time:
+            return
+        self.last_time_enemy_shot = pygame.time.get_ticks()
+        for i in range(len(self.enemis_hitboxes)):
+            for j in range(len(self.enemis_hitboxes[i])):
+                if self.enemis_hitboxes[i][j] != None and j % 2 == shoot_pr and self.current_bullet < self.max_amount_of_enemy_bullets:
+                    bullet = pygame.Rect(self.enemis_hitboxes[i][j].x+40,self.enemis_hitboxes[i][j].y+80, self.bullet_size // 2, self.bullet_size)
+                    self.enemy_bullet_hitboxes.append(bullet)
+                    self.current_bullet += 1               
+    def draw_enemy_bullets(self):
+        enemy_bullet_image = pygame.image.load('assets/enemy_bullet.png').convert_alpha()
+        enemy_bullet_image = pygame.transform.scale(enemy_bullet_image, (self.bullet_size // 2, self.bullet_size))
+        for bullet in self.enemy_bullet_hitboxes:
+            self.window.blit(enemy_bullet_image, (bullet.x,bullet.y))
+    def move_enemy_bullets(self):
+        for bullet in self.enemy_bullet_hitboxes:
+            bullet.y += self.bullet_velocity
+    def remove_out_of_bounds_enemy_bullets(self):
+         for bullet in self.enemy_bullet_hitboxes:
+            if bullet.y > 800:
+                self.enemy_bullet_hitboxes.remove(bullet)
+                self.current_bullet -=1
+    def detect_if_shot_by_enemy(self):
+        for bullet in self.enemy_bullet_hitboxes:
+            if bullet.colliderect(self.player_hitbox):
+                self.end_game_and_go_to_game_over_screen()
     def display_current_ammo(self):
         font = pygame.font.Font('assets/Roboto-Black.ttf', 26)
         text = font.render(f'Ammo:{self.ammo}', True, (0,0,0), (255,255,255))
@@ -142,6 +175,11 @@ class Game():
             self.animatebullets()
             self.movebullets_and_delete_when_out_of_screen()
             self.detect_collisions()
+            self.enemy_assign_shoot()
+            self.draw_enemy_bullets()
+            self.move_enemy_bullets()
+            self.remove_out_of_bounds_enemy_bullets()
+            self.detect_if_shot_by_enemy()
             if self.detect_if_game_is_over():
                 self.end_game_and_go_to_game_over_screen()
             for event in pygame.event.get():

@@ -66,7 +66,6 @@ class HomeScreen(object):
         click = pygame.mouse.get_pressed(3)[0] and self.quit_button.collidepoint(pygame.mouse.get_pos())
         if click:
             return True
-        
     def run(self):
         pygame.init()
         pygame.display.set_caption('Budget Space Invader')
