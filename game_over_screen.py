@@ -61,11 +61,6 @@ class GameOver(object):
         click = pygame.mouse.get_pressed(3)[0] and self.quit_button.collidepoint(pygame.mouse.get_pos())
         if click:
             return True
-            # pygame.init()
-            # self.window = None
-            # HomeScreen(self.height, self.width, self.player_size, self.player_speed, 10, 
-            # self.bullet_size, self.enemy_size,self.bullet_speed).run()
-            # return True
     def run(self):
         pygame.init()
         pygame.display.set_caption('Budget Space Invader')
